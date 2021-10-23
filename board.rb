@@ -8,15 +8,16 @@ require_relative 'errors'
 class Board
 
   # Validates position arrays
-  def self.vaild_position?(pos)
+  def self.valid_position?(pos)
     return false unless pos.is_a?(Array)
     return false unless pos.length == 2
 
-    return false unless pos.each do |index|
+    return false unless pos.all? do |index|
       return false unless index.is_a?(Integer)
 
       !index.negative? && index < 8
     end
+
     true
   end
 
@@ -28,7 +29,7 @@ class Board
   end
 
   def [](pos)
-    raise PositionError unless Board.vaild_position?(pos)
+    raise PositionError unless Board.valid_position?(pos)
 
     row, col = pos
 
@@ -36,7 +37,7 @@ class Board
   end
 
   def []=(pos, val)
-    raise PositionError unless Board.vaild_position?(pos)
+    raise PositionError unless Board.valid_position?(pos)
     raise ArgumentError unless val.is_a?(Piece) || val.nil?
 
     row, col = pos
@@ -56,8 +57,8 @@ class Board
 
   def setup_board
     # Black's pieces
-    8.times { @rows[0] << Piece.new }
-    8.times { @rows[1] << Piece.new }
+    8.times { |col_index| @rows[0] << Piece.new(:black, self, [0, col_index]) }
+    8.times { |col_index| @rows[1] << Piece.new(:black, self, [1, col_index]) }
 
     # Empty squares
     (2..5).each do |row_index|
@@ -65,7 +66,7 @@ class Board
     end
 
     # White's pieces
-    8.times { @rows[6] << Piece.new }
-    8.times { @rows[7] << Piece.new }
+    8.times { |col_index| @rows[6] << Piece.new(:white, self, [6, col_index]) }
+    8.times { |col_index| @rows[7] << Piece.new(:white, self, [7, col_index]) }
   end
 end
