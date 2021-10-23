@@ -1,5 +1,5 @@
 require_relative 'pieces/piece'
-require_relative 'pieces/biship'
+require_relative 'pieces/bishop'
 require_relative 'pieces/king'
 require_relative 'pieces/knight'
 require_relative 'pieces/null_piece'
