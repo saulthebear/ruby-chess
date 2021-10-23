@@ -1,6 +1,6 @@
 # require 'byebug'
 
-require_relative 'piece'
+require_relative 'pieces'
 require_relative 'errors'
 
 # Holds a 2D array of board positions
@@ -62,7 +62,7 @@ class Board
 
     # Empty squares
     (2..5).each do |row_index|
-      8.times { @rows[row_index] << nil }
+      8.times { @rows[row_index] << NullPiece }
     end
 
     # White's pieces
