@@ -40,7 +40,7 @@ module Slideable
   def grow_unblocked_moves_in_dir(dx, dy)
     # debugger
     moves = []
-    curr_pos = @pos.dup
+    curr_pos = @pos
     loop do
       next_pos = change_pos(curr_pos, [dx, dy])
       break unless Board.valid_position?(next_pos)
