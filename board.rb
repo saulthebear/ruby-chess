@@ -56,17 +56,41 @@ class Board
   private
 
   def setup_board
-    # Black's pieces
-    8.times { |col_index| @rows[0] << Piece.new(:black, self, [0, col_index]) }
-    8.times { |col_index| @rows[1] << Piece.new(:black, self, [1, col_index]) }
+    place_pieces(:black)
+    place_pieces(:white)
 
     # Empty squares
     (2..5).each do |row_index|
       8.times { @rows[row_index] << NullPiece }
     end
+  end
 
-    # White's pieces
-    8.times { |col_index| @rows[6] << Piece.new(:white, self, [6, col_index]) }
-    8.times { |col_index| @rows[7] << Piece.new(:white, self, [7, col_index]) }
+  def piece_classes_in_order
+    [
+      Rook,
+      Knight,
+      Bishop,
+      Queen,
+      King,
+      Bishop,
+      Knight,
+      Rook
+    ].freeze
+  end
+
+  def place_pieces(color)
+    outer_row = color == :white ? 7 : 0
+
+    8.times do |col_index|
+      pos = [outer_row, col_index]
+      piece = piece_classes_in_order[col_index]
+      self[pos] = piece.new(color, self, pos)
+    end
+
+    8.times do |col_index|
+      row_index = color == :white ? outer_row - 1 : outer_row + 1
+      pos = [row_index, col_index]
+      self[pos] = Pawn.new(color, self, pos)
+    end
   end
 end
