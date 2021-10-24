@@ -1,5 +1,3 @@
-# require 'byebug'
-
 require_relative 'pieces'
 require_relative 'errors'
 
@@ -37,19 +35,26 @@ class Board
 
   def []=(pos, val)
     raise PositionError unless Board.valid_position?(pos)
-    raise ArgumentError unless val.is_a?(Piece) || val.nil?
+    raise ArgumentError unless val.is_a?(Piece) || val == NullPiece
 
     row, col = pos
     @rows[row][col] = val
   end
 
   def move_piece(start_pos, end_pos)
-    raise ArgumentError if self[start_pos].nil?
-    raise ArgumentError unless self[end_pos].nil?
+    err = "There's no piece at #{start_pos}"
+    raise MoveError.new(err) if self[start_pos] == NullPiece
 
     piece = self[start_pos]
-    self[start_pos] = nil
+    possible_end_positions = piece.moves
+
+    raise MoveError unless possible_end_positions.include?(end_pos)
+
+    # Take piece
+    self[end_pos] = NullPiece
+    self[start_pos] = NullPiece
     self[end_pos] = piece
+    piece.pos = end_pos
   end
 
   private
