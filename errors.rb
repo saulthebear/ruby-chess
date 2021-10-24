@@ -1,5 +1,7 @@
 class PositionError < ArgumentError
-  def message
-    'Invalid position.'
+  def initialize(msg = 'Invalid position!')
+    super
+  end
+end
   end
 end
