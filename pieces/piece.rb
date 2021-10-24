@@ -1,4 +1,4 @@
-require_relative 'board'
+require_relative '../board'
 
 # Holds functionality common to all chess pieces
 class Piece
@@ -38,13 +38,13 @@ class Piece
 
 
   def can_move_here(pos)
-    return false unless pos_in_range(pos)
+    return false unless pos_in_range?(pos)
     return false unless pos_empty?(pos) || pos_takeable(pos)
     
     true
   end
 
-  def pos_in_range(pos)
+  def pos_in_range?(pos)
     Board.valid_position?(pos)
   end
 
