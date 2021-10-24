@@ -37,6 +37,7 @@ module Slideable
   end
 
   public
+
   def grow_unblocked_moves_in_dir(dx, dy)
     # debugger
     moves = []

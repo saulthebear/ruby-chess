@@ -2,7 +2,6 @@ require_relative '../board'
 
 # Holds functionality common to all chess pieces
 class Piece
-
   attr_reader :color, :board
 
   def initialize(color, board, pos)
@@ -36,11 +35,10 @@ class Piece
     "<#{color} #{symbol} #{pos}>"
   end
 
-
   def can_move_here(pos)
     return false unless pos_in_range?(pos)
     return false unless pos_empty?(pos) || pos_takeable(pos)
-    
+
     true
   end
 

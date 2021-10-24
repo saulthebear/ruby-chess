@@ -7,7 +7,7 @@ class Pawn < Piece
     forward_steps.concat(side_attacks)
   end
 
-  # private
+  private
 
   def at_start_row?
     pos[0] == start_row
@@ -17,7 +17,7 @@ class Pawn < Piece
     @color == :white ? 6 : 1
   end
 
-  # @return [1, -1]
+  # @return [1, -1] Forward direction based on color
   def forward_dir
     @color == :white ? -1 : 1
   end

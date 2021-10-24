@@ -6,7 +6,6 @@ require_relative 'errors'
 # Holds a 2D array of board positions
 # Holds Pieces
 class Board
-
   # Validates position arrays
   def self.valid_position?(pos)
     return false unless pos.is_a?(Array)
@@ -58,8 +57,10 @@ class Board
   def setup_board
     place_pieces(:black)
     place_pieces(:white)
+    place_null_pieces
+  end
 
-    # Empty squares
+  def place_null_pieces
     (2..5).each do |row_index|
       8.times { @rows[row_index] << NullPiece }
     end
