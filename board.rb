@@ -50,11 +50,59 @@ class Board
 
     raise MoveError unless possible_end_positions.include?(end_pos)
 
-    # Take piece
+    # Capture opponent's piece
     self[end_pos] = NullPiece.instance
     self[start_pos] = NullPiece.instance
     self[end_pos] = piece
     piece.pos = end_pos
+  end
+
+  def in_check?(color)
+    king_pos = find_king(color)
+    opponent_color = color == :white ? :black : :white
+    under_threat = attacked_positions(opponent_color)
+    under_threat.include?(king_pos)
+  end
+
+  def checkmate?(color)
+    return false unless in_check?(color)
+
+    # pieces_by_color(color).any? { |piece| !piece.valid_moves.empty? }
+  end
+
+  # Returns the king's position
+  def find_king(color)
+    @rows.each_with_index do |row, row_index|
+      row.each_with_index do |piece, col_index|
+        return [row_index, col_index] if piece.is_a?(King) && piece.color == color
+      end
+    end
+  end
+
+  def attacked_positions(color)
+    result = Set.new
+    @rows.each do |row|
+      row.each do |piece|
+        next unless piece.color == color
+
+        result += piece.moves
+      end
+    end
+    result
+  end
+
+  def pieces_by_color(color)
+    all_pieces.select { |piece| piece.color == color }
+  end
+
+  def all_pieces
+    pieces = []
+    @rows.each do |row|
+      row.each do |piece|
+        pieces << piece unless piece.is_a?(NullPiece)
+      end
+    end
+    pieces
   end
 
   private
