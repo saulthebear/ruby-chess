@@ -7,6 +7,12 @@ class Pawn < Piece
     forward_steps.concat(side_attacks)
   end
 
+  def threatens
+    attackable_positions.select do |new_pos|
+      pos_in_range?(new_pos)
+    end
+  end
+
   private
 
   def at_start_row?

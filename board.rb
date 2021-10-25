@@ -85,7 +85,7 @@ class Board
       row.each do |piece|
         next unless piece.color == color
 
-        result += piece.moves
+        piece.threatens
       end
     end
     result

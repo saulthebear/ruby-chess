@@ -27,6 +27,12 @@ class Piece
   # @returns [Array] positions this piece can move to
   def moves() end
 
+  # @returns [Array] positions being threatened by this piece
+  # Seperate from Piece#moves so that it can be overwritten by Pawn
+  def threatens
+    moves
+  end
+
   def inspect
     "<#{color} #{symbol} #{pos}>"
   end
