@@ -80,15 +80,7 @@ class Board
   end
 
   def attacked_positions(color)
-    result = Set.new
-    @rows.each do |row|
-      row.each do |piece|
-        next unless piece.color == color
-
-        piece.threatens
-      end
-    end
-    result
+    pieces_by_color(color).reduce(Set.new) { |set, piece| set + piece.threatens }
   end
 
   def pieces_by_color(color)
