@@ -35,7 +35,7 @@ class Board
 
   def []=(pos, val)
     raise PositionError unless Board.valid_position?(pos)
-    raise ArgumentError unless val.is_a?(Piece) || val == NullPiece
+    raise ArgumentError unless val.is_a?(Piece) || val.is_a?(NullPiece)
 
     row, col = pos
     @rows[row][col] = val
@@ -43,7 +43,7 @@ class Board
 
   def move_piece(start_pos, end_pos)
     err = "There's no piece at #{start_pos}"
-    raise MoveError.new(err) if self[start_pos] == NullPiece
+    raise MoveError.new(err) if self[start_pos].is_a?(NullPiece)
 
     piece = self[start_pos]
     possible_end_positions = piece.moves
@@ -51,8 +51,8 @@ class Board
     raise MoveError unless possible_end_positions.include?(end_pos)
 
     # Take piece
-    self[end_pos] = NullPiece
-    self[start_pos] = NullPiece
+    self[end_pos] = NullPiece.instance
+    self[start_pos] = NullPiece.instance
     self[end_pos] = piece
     piece.pos = end_pos
   end
@@ -67,7 +67,7 @@ class Board
 
   def place_null_pieces
     (2..5).each do |row_index|
-      8.times { @rows[row_index] << NullPiece }
+      8.times { @rows[row_index] << NullPiece.instance }
     end
   end
 

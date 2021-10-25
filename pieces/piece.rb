@@ -43,7 +43,7 @@ class Piece
   end
 
   def pos_empty?(pos)
-    @board[pos] == NullPiece
+    @board[pos] == NullPiece.instance
   end
 
   def pos_takeable(pos)

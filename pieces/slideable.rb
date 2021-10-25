@@ -46,7 +46,7 @@ module Slideable
       next_pos = change_pos(curr_pos, [dx, dy])
       break unless Board.valid_position?(next_pos)
 
-      unless @board[next_pos] == NullPiece
+      unless @board[next_pos] == NullPiece.instance
         break if @board[next_pos].color == @color
 
         # Other color, so can be taken
