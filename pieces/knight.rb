@@ -17,6 +17,6 @@ class Knight < Piece
   end
 
   def symbol
-    'K'
+    '♞'
   end
 end

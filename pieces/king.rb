@@ -18,6 +18,6 @@ class King < Piece
   end
 
   def symbol
-    'KING'
+    '♚'
   end
 end

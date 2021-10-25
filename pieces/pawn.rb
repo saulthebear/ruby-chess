@@ -1,6 +1,6 @@
 class Pawn < Piece
   def symbol
-    'P'
+    '♟︎'
   end
 
   def moves
@@ -36,7 +36,7 @@ class Pawn < Piece
   # Override since pawns cannot take in front
   def pos_takeable(target_pos)
     if attackable_positions.include?(target_pos)
-      return false if @board[target_pos] == NullPiece
+      return false if @board[target_pos] == NullPiece.instance
 
       return @board[target_pos].color != @color
     end

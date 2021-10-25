@@ -27,10 +27,6 @@ class Piece
   # @returns [Array] positions this piece can move to
   def moves() end
 
-  def symbol
-    'Piece'
-  end
-
   def inspect
     "<#{color} #{symbol} #{pos}>"
   end
