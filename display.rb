@@ -4,27 +4,35 @@ require_relative 'cursor'
 require_relative 'board'
 
 class Display
-  attr_reader :cursor # For debugging
-  attr_accessor :highlighted_positions
+  attr_reader :cursor
 
-  def initialize(board)
+  def initialize(board, debug: false)
     @board = board
     @cursor = Cursor.new([0, 0], @board)
     @highlighted_positions = Set.new
+    @debug = debug
   end
 
   def render
+    highlight_threatened_squares(@cursor.cursor_pos) if @debug && @cursor.selected?
     @board.rows.each_with_index do |row, row_index|
       row_str = row.each_with_index
                    .map { |piece, col_index| square(piece, row_index, col_index) }
                    .join
       puts row_str
     end
+
+    display_debug_info if @debug
     nil
   end
 
-  def add_highlight(*positions)
-    @highlighted_positions += positions
+  def display_debug_info
+    puts "Cursor at: #{@cursor.cursor_pos}"
+    puts "Selected?: #{@cursor.selected?}\n"
+    puts "White in check? #{@board.in_check?(:white)}"
+    puts "Black in check? #{@board.in_check?(:black)}"
+    puts "White in checkmate? #{@board.checkmate?(:white)}"
+    puts "Black in checkmate? #{@board.checkmate?(:black)}"
   end
 
   private
@@ -48,36 +56,35 @@ class Display
     return :green if selected?(pos)
     return :light_yellow if highlighted?(pos) && hover?(pos)
 
-    return highlighted_color(pos) if highlighted?(pos)
+    return :light_red if highlighted?(pos)
 
     return :yellow if hover?(pos)
 
     light_square?(pos) ? :white : :light_black
   end
-  # def square_color(pos)
-  #   return highlighted_and_selected_color(pos) if highlighted?(pos) && hover?(pos)
 
-  #   return highlighted_color(pos) if highlighted?(pos)
+  def highlight_threatened_squares(pos)
+    reset_highlights
+    piece = @board[pos]
+    return if piece.is_a?(NullPiece)
 
-  #   return :yellow if hover?(pos)
+    @highlighted_positions = piece.threatens
+  end
 
-  #   light_square?(pos) ? :white : :light_black
-  # end
+  def reset_highlights
+    @highlighted_positions = Set.new
+  end
 
   def hover?(pos)
     @cursor.cursor_pos == pos
   end
 
   def selected?(pos)
-    @cursor.selected && hover?(pos)
+    @cursor.selected? && hover?(pos)
   end
 
   def highlighted?(pos)
     @highlighted_positions.include?(pos)
-  end
-
-  def highlighted_color(pos)
-    light_square?(pos) ? :light_red : :red
   end
 
   def highlighted_and_selected_color(pos)
@@ -90,18 +97,5 @@ class Display
     both_even = row_index.even? && col_index.even?
     both_odd = row_index.odd? && col_index.odd?
     both_even || both_odd
-  end
-end
-
-# For debugging
-if __FILE__ == $PROGRAM_NAME
-  d = Display.new(Board.new)
-  c = d.cursor
-  d.add_highlight([3,3], [3,5])
-  loop do
-    system('clear')
-    d.render
-    puts " #{c.cursor_pos} "
-    c.get_input
   end
 end
