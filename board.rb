@@ -86,13 +86,19 @@ class Board
 
   def place_pieces(color)
     outer_row = color == :white ? 7 : 0
+    place_major_pieces(color, outer_row)
+    place_pawns(color, outer_row)
+  end
 
+  def place_major_pieces(color, outer_row)
     8.times do |col_index|
       pos = [outer_row, col_index]
       piece = piece_classes_in_order[col_index]
       self[pos] = piece.new(color, self, pos)
     end
+  end
 
+  def place_pawns(color, outer_row)
     8.times do |col_index|
       row_index = color == :white ? outer_row - 1 : outer_row + 1
       pos = [row_index, col_index]
