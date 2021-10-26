@@ -76,6 +76,7 @@ class Game
     @players.each do |player_symbol, player|
       color = player.color
       if @board.checkmate?(color)
+        render
         notify_checkmate(player_symbol)
         return true
       end
