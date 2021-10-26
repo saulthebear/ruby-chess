@@ -2,7 +2,8 @@ require_relative '../board'
 
 # Holds functionality common to all chess pieces
 class Piece
-  attr_reader :color, :board
+  attr_reader :color
+  attr_accessor :board
 
   def initialize(color, board, pos)
     @color = color
@@ -33,8 +34,28 @@ class Piece
     moves
   end
 
+  def valid_moves
+    moves.reject do |new_pos|
+      move_results_in_check?(new_pos)
+    end
+  end
+
   def inspect
     "<#{color} #{symbol} #{pos}>"
+  end
+
+  private
+
+  def move_results_in_check?(new_pos)
+    old_board = @board
+    new_board = @board.dup
+    @board = new_board
+
+    new_board.move_piece(@pos, new_pos, only_valid: false)
+    result = new_board.in_check?(@color)
+
+    @board = old_board
+    result
   end
 
   def can_move_here(pos)

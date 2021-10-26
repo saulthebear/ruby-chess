@@ -41,12 +41,17 @@ class Board
     @rows[row][col] = val
   end
 
-  def move_piece(start_pos, end_pos)
+  def move_piece(start_pos, end_pos, only_valid: true)
     err = "There's no piece at #{start_pos}"
     raise MoveError.new(err) if self[start_pos].is_a?(NullPiece)
 
     piece = self[start_pos]
-    possible_end_positions = piece.moves
+    # only_valid is used to avoid recursion when a piece creates valid_moves
+    possible_end_positions = if only_valid
+                               piece.valid_moves
+                             else
+                               piece.moves
+                             end
 
     raise MoveError unless possible_end_positions.include?(end_pos)
 
@@ -95,6 +100,20 @@ class Board
       end
     end
     pieces
+  end
+
+  def initialize_copy(original_board)
+    @rows = original_board.rows.map do |row|
+      row.map do |piece|
+        if piece.is_a?(NullPiece)
+          NullPiece.instance
+        else
+          new_piece = piece.dup
+          new_piece.board = self
+          new_piece
+        end
+      end
+    end
   end
 
   private
