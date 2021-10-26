@@ -6,7 +6,7 @@ require_relative 'board'
 class Display
   attr_reader :cursor
 
-  def initialize(board, show_moves: true, debug: false)
+  def initialize(board, show_moves: false, debug: false)
     @board = board
     @cursor = Cursor.new([0, 0], @board)
     @highlighted_positions = Set.new
