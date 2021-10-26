@@ -35,8 +35,10 @@ class Piece
   end
 
   def valid_moves
-    moves.reject do |new_pos|
-      move_results_in_check?(new_pos)
+    if @board.in_check?(@color)
+      moves.reject { |new_pos| move_results_in_check?(new_pos) }
+    else
+      moves.select { |new_pos| move_stops_check?(new_pos) }
     end
   end
 
@@ -47,12 +49,24 @@ class Piece
   private
 
   def move_results_in_check?(new_pos)
+    verify_move_on_simulated_board(new_pos) do |new_board|
+      new_board.in_check?(@color)
+    end
+  end
+
+  def move_stops_check?(new_pos)
+    verify_move_on_simulated_board(new_pos) do |new_board|
+      !new_board.in_check?(@color)
+    end
+  end
+
+  def verify_move_on_simulated_board(new_pos, &prc)
     old_board = @board
     new_board = @board.dup
     @board = new_board
 
     new_board.move_piece(@pos, new_pos, only_valid: false)
-    result = new_board.in_check?(@color)
+    result = prc.call(new_board)
 
     @board = old_board
     result

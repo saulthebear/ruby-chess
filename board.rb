@@ -72,7 +72,7 @@ class Board
   def checkmate?(color)
     return false unless in_check?(color)
 
-    # pieces_by_color(color).any? { |piece| !piece.valid_moves.empty? }
+    pieces_by_color(color).all? { |piece| piece.valid_moves.empty? }
   end
 
   # Returns the king's position
