@@ -13,7 +13,7 @@ class Game
   end
 
   def play
-    notify_players
+    notify_current_player
     until checkmate?
       render
       handle_input
@@ -24,24 +24,41 @@ class Game
   private
 
   def handle_input
-    piece_to_move = nil
-    until correct_color?(piece_to_move)
-      start_pos, end_pos = get_start_and_end
-      piece_to_move = @board[start_pos]
-    end
+    start_pos, end_pos = receive_start_and_end
 
     @board.move_piece(start_pos, end_pos)
   rescue MoveError => e
-    puts "ERROR: #{e.message} Try again.".red
+    notify_players("#{e.message} Try again.", :error)
     retry
+  end
+
+  def receive_start_and_end
+    start_pos = player_selection until correct_color?(piece_at(start_pos))
+
+    end_pos = player_selection
+
+    [start_pos, end_pos]
+  end
+
+  def player_selection
+    player_input = nil
+    until Board.valid_position?(player_input)
+      player_input = @players[@current_player].make_move(@board)
+      render
+    end
+    player_input
   end
 
   def correct_color?(piece)
     return false if piece.nil?
 
-    current_player_color
+    if piece.is_a?(NullPiece)
+      notify_players('Select a piece!', :error)
+      return false
+    end
+
     correct = piece.color == current_player_color
-    puts "That's not your piece! Try again".red unless correct
+    notify_players("That's not your piece! Try again", :error) unless correct
     correct
   end
 
@@ -49,27 +66,9 @@ class Game
     @players[@current_player].color
   end
 
-  def get_start_and_end
-    start_pos = nil
-    end_pos = nil
-    2.times do |selection_number|
-      player_input = nil
-      until Board.valid_position?(player_input)
-        player_input = @players[@current_player].make_move(@board)
-        render
-      end
-      if selection_number.zero?
-        start_pos = player_input
-      else
-        end_pos = player_input
-      end
-    end
-    [start_pos, end_pos]
-  end
-
   def render
     system('clear')
-    notify_players
+    notify_current_player
     @display.render
   end
 
@@ -88,16 +87,35 @@ class Game
     winner_symbol = loser_symbol == :p1 ? :p2 : :p1
     winner = @players[winner_symbol]
     loser = @players[loser_symbol]
-    puts "Congratulations #{winner.color.to_s.upcase}!
-    #{loser.color.to_s.upcase} is in checkmate.".green
+    message = "Congratulations #{winner.color.to_s.upcase}!
+    #{loser.color.to_s.upcase} is in checkmate."
+    notify_players(message, :success)
   end
 
-  def notify_players
-    puts "#{current_player_color.to_s.upcase} to move".yellow
+  def notify_players(message, style)
+    case style
+    when :info
+      colored_message = message.yellow
+    when :error
+      colored_message = message.red
+    when :success
+      colored_message = message.green
+    end
+    puts colored_message
+  end
+
+  def notify_current_player
+    notify_players("#{current_player_color.to_s.upcase} to move", :info)
   end
 
   def swap_turn!
     @current_player = @current_player == :p1 ? :p2 : :p1
+  end
+
+  def piece_at(pos)
+    return nil if pos.nil?
+
+    @board[pos]
   end
 end
 

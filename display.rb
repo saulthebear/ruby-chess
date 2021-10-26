@@ -15,16 +15,11 @@ class Display
   end
 
   def render
-    highlight_threatened_squares(@cursor.cursor_pos) if @debug && @cursor.selected?
-    highlight_valid_moves(@cursor.cursor_pos) if @show_moves && @cursor.selected?
+    set_highlights
 
-    puts "   #{('a'..'h').to_a.join('  ')}"
-    @board.rows.each_with_index do |row, row_index|
-      row_str = row.each_with_index
-                   .map { |piece, col_index| square(piece, row_index, col_index) }
-                   .join
-      puts "#{render_row_index(row_index)} #{row_str}"
-    end
+    print_column_letters
+    print_board
+    puts "\n"
 
     display_debug_info if @debug
     nil
@@ -43,9 +38,13 @@ class Display
     puts "Black in checkmate? #{@board.checkmate?(:black)}"
   end
 
+  def unselect
+    @cursor.unselect
+  end
+
   private
 
-  def square(piece, row_index, col_index)
+  def render_square(piece, row_index, col_index)
     background = square_color([row_index, col_index])
     piece_str = piece_to_string(piece)
     " #{piece_str} ".colorize(background: background)
@@ -71,8 +70,13 @@ class Display
     light_square?(pos) ? :white : :light_black
   end
 
+  def set_highlights
+    reset_highlights unless @highlighted_positions.empty?
+    highlight_threatened_squares(@cursor.cursor_pos) if @debug && @cursor.selected?
+    highlight_valid_moves(@cursor.cursor_pos) if @show_moves && @cursor.selected?
+  end
+
   def highlight_threatened_squares(pos)
-    reset_highlights
     piece = @board[pos]
     return if piece.is_a?(NullPiece)
 
@@ -80,7 +84,6 @@ class Display
   end
 
   def highlight_valid_moves(start_pos)
-    reset_highlights
     piece = @board[start_pos]
     return if piece.is_a?(NullPiece)
 
@@ -113,5 +116,18 @@ class Display
     both_even = row_index.even? && col_index.even?
     both_odd = row_index.odd? && col_index.odd?
     both_even || both_odd
+  end
+
+  def print_column_letters
+    puts "   #{('a'..'h').to_a.join('  ')}"
+  end
+
+  def print_board
+    @board.rows.each_with_index do |row, row_index|
+      row_str = row.each_with_index
+                   .map { |piece, col_index| render_square(piece, row_index, col_index) }
+                   .join
+      puts "#{render_row_index(row_index)} #{row_str}"
+    end
   end
 end

@@ -32,14 +32,13 @@ module Slideable
 
   # Overwritten by subclass
   # Returns HORIZONTAL_DIRS or DIAGONAL_DIRS
-  def move_dirs()
+  def move_dirs
     raise NotImplementedError
   end
 
   public
 
   def grow_unblocked_moves_in_dir(dx, dy)
-    # debugger
     moves = []
     curr_pos = @pos
     loop do
@@ -47,6 +46,7 @@ module Slideable
       break unless Board.valid_position?(next_pos)
 
       unless @board[next_pos] == NullPiece.instance
+        # Our piece, so it blocks the path
         break if @board[next_pos].color == @color
 
         # Other color, so can be taken

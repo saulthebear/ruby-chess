@@ -50,6 +50,10 @@ class Cursor
     @selected
   end
 
+  def unselect
+    @selected = false
+  end
+
   private
 
   def read_char
@@ -84,15 +88,23 @@ class Cursor
   def handle_key(key)
     case key
     when :return, :space
-      toggle_selected
-      @cursor_pos
+      select_this_pos
     when :left, :right, :up, :down
-      @selected = false
-      update_pos(MOVES[key])
-      nil
+      move(key)
     when :ctrl_c
       Process.exit(0)
     end
+  end
+
+  def select_this_pos
+    toggle_selected
+    @cursor_pos
+  end
+
+  def move(direction)
+    @selected = false
+    update_pos(MOVES[direction])
+    nil
   end
 
   def update_pos(diff)
