@@ -6,24 +6,32 @@ require_relative 'board'
 class Display
   attr_reader :cursor
 
-  def initialize(board, debug: false)
+  def initialize(board, show_moves: true, debug: false)
     @board = board
     @cursor = Cursor.new([0, 0], @board)
     @highlighted_positions = Set.new
+    @show_moves = show_moves
     @debug = debug
   end
 
   def render
     highlight_threatened_squares(@cursor.cursor_pos) if @debug && @cursor.selected?
+    highlight_valid_moves(@cursor.cursor_pos) if @show_moves && @cursor.selected?
+
+    puts "   #{('a'..'h').to_a.join('  ')}"
     @board.rows.each_with_index do |row, row_index|
       row_str = row.each_with_index
                    .map { |piece, col_index| square(piece, row_index, col_index) }
                    .join
-      puts row_str
+      puts "#{render_row_index(row_index)} #{row_str}"
     end
 
     display_debug_info if @debug
     nil
+  end
+
+  def render_row_index(row_index)
+    ((row_index - 8) * -1).to_s
   end
 
   def display_debug_info
@@ -69,6 +77,14 @@ class Display
     return if piece.is_a?(NullPiece)
 
     @highlighted_positions = piece.threatens
+  end
+
+  def highlight_valid_moves(start_pos)
+    reset_highlights
+    piece = @board[start_pos]
+    return if piece.is_a?(NullPiece)
+
+    @highlighted_positions = piece.valid_moves
   end
 
   def reset_highlights
