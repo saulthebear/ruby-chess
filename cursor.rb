@@ -89,6 +89,7 @@ class Cursor
     when :left, :right, :up, :down
       @selected = false
       update_pos(MOVES[key])
+      nil
     when :ctrl_c
       Process.exit(0)
     end
